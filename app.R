@@ -11,15 +11,17 @@ library(colorblindr)
 
 # Read in pokemon data ---------------------------------------------------
 
-pokemon_data <- clean_names(read.csv("pokemon.csv"))  %>% 
+pokemon_data <- rio::import(here::here("pokemon.csv"), setclass = "tibble") %>%
+    janitor::clean_names() %>% 
     select(-percentage_male, -type2) %>%  
     filter(type1 %in% c("ghost", "fairy", "dragon")) %>%  # Let's limit this to a few pokemon
-    mutate(type1 = droplevels(type1)) %>% # Few poke have data for these
+    mutate(type1 = droplevels(as.factor(type1))) %>% # Few poke have data for these
     drop_na()
 pokemon_type <- pokemon_data$type1
 pokemon_data <- pokemon_data %>% 
     select(starts_with("against"), hp) %>% 
-    scale() %>% as.data.frame()
+    scale() %>%
+    as.data.frame()
 
 
 # Load output from k-means clustering -------------------------------------
@@ -36,7 +38,7 @@ load_clustdata <- function(file) {
 
 map(get_filenames("kmeans"), ~load_clustdata(.x))
 
-# Custom functinos --------------------------------------------------------
+# Custom functions --------------------------------------------------------
 
 # function to create data for silhouette table
 get_summary_data <- function(clust){
@@ -59,7 +61,11 @@ get_summary_data <- function(clust){
 make_summary_table <- function(clust) {
     table <- get_summary_data(clust) %>% 
         datatable(rownames = FALSE, 
-                  colnames = c("Cluster", "N", "Within SS", "Between SS", "Neg. Silhouette"),
+                  colnames = c("Cluster", 
+                               "N", 
+                               "Within SS", 
+                               "Between SS", 
+                               "Neg. Silhouette"),
                   caption = htmltools::tags$caption(
                       style = 'caption-side: bottom; text-align: left;',
                       htmltools::em('N = number of observations per cluster; SS = sum of squares')))
@@ -79,12 +85,18 @@ scatplot <- function(data){
     facet_labels <- c(dragon = "Dragon", fairy = "Fairy", ghost = "Ghost")
     
     plot_data %>% 
-        ggplot(aes(x = principal_component, y = value, color = factor(cluster))) +
-        geom_point(position = position_jitter(width = 0.5), alpha = 0.6, size = 5) + 
+        ggplot(aes(x = principal_component, 
+                   y = value, 
+                   color = factor(cluster))) +
+        geom_point(position = position_jitter(width = 0.5), 
+                   alpha = 0.6, 
+                   size = 5) + 
         coord_flip() +
         scale_color_OkabeIto() +
-        labs(x = "Principal Component \n", y = "") + 
-        facet_wrap(~pokemon_type, labeller = labeller(pokemon_type = facet_labels)) +
+        labs(x = "Principal Component \n", 
+             y = "") + 
+        facet_wrap(~pokemon_type, 
+                   labeller = labeller(pokemon_type = facet_labels)) +
         theme_minimal(base_size = 17) + 
         theme(panel.grid.minor = element_blank())
 }
@@ -116,8 +128,17 @@ sidebar <- dashboardSidebar(
                     selected = "clust2")
     ))
 
+# ASH: thus far everything you have done is superb!!! :)
+# ASH: I really don't have much feedback for the code itself--it's very advanced and efficient
+# ASH: I merely modifed coding style where it was hard to read/the line was too long
 
 # Dashboard body ----------------------------------------------------------
+
+# ASH: I LOVE the fact that you are using Pokemon data, so... (see next line)
+# ASH: somewhere here I would include a section describing your data. I want to know more!
+# ASH: at a more basic level, I'd also explain why you are using cluster analysis..
+# ASH: along those lines, I'd provide a definition of k-means clustering
+# ASH: I'd also define centriod. When I first read "Number of centroids", I was confused
 
 body <- dashboardBody(
     tabItems(
@@ -183,14 +204,20 @@ server <- function(input, output) {
             data <- get(input$clusters)
             data <- data$silinfo$widths
 
-            ggplot(data, aes(x = seq_along(cluster), y = sil_width, fill = cluster, color = cluster)) +
+            ggplot(data, aes(x = seq_along(cluster), 
+                             y = sil_width, 
+                             fill = cluster, 
+                             color = cluster)) +
                 geom_col() +
                 coord_flip() +
-                geom_hline(yintercept = mean(data$sil_width, na.rm = TRUE), linetype = 2, size = .7) +
+                geom_hline(yintercept = mean(data$sil_width, na.rm = TRUE), 
+                           linetype = 2, 
+                           size = .7) +
                 scale_fill_OkabeIto() +
                 scale_color_OkabeIto() +
                 theme_minimal() + 
-                labs(title = paste0("Average Silhouette Width = ", round(mean(data$sil_width, na.rm = TRUE), 2)),
+                labs(title = paste0("Average Silhouette Width = ", 
+                                    round(mean(data$sil_width, na.rm = TRUE), 2)),
                      x = NULL,
                      y = "Silhouette width") 
         })
