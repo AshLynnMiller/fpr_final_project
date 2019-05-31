@@ -1,4 +1,15 @@
 ## app.R ##
+
+# I  like to include commented out installation of packages to assist in reproducability
+# install.packages("shinydashboard")
+# install.packages("factoextra")
+# install.packages("here")
+# install.packages("R.utils")
+# install.packages("tidyverse")
+# install.packages("janitor")
+# install.packages("DT")
+# install.packages("colorblindr")
+
 library(shinydashboard)
 library(factoextra)
 library(here)
@@ -73,6 +84,10 @@ make_summary_table <- function(clust) {
     return(table)
 }
 
+# ASH: I struggle with tables--I'm totally going to adopt these functions for my own work!!
+# ASH: Product produced by this code looks great
+# ASH: Nice use of commentary
+
 # Scatterplot function
 
 scatplot <- function(data){
@@ -96,12 +111,12 @@ scatplot <- function(data){
         labs(x = "Principal Component \n", 
              y = "") + 
         facet_wrap(~pokemon_type, 
-                   labeller = labeller(pokemon_type = facet_labels)) +
+                   labeller = labeller(pokemon_type = facet_labels)) + # ASH: I was totally unaware of the labeller argument :o
         theme_minimal(base_size = 17) + 
         theme(panel.grid.minor = element_blank())
 }
 
-
+# The scatterplot is definitely my fav--looks great
 
 # Dashboard header --------------------------------------------------------
 
@@ -136,8 +151,7 @@ sidebar <- dashboardSidebar(
 
 # ASH: I LOVE the fact that you are using Pokemon data, so... (see next line)
 # ASH: somewhere here I would include a section describing your data. I want to know more!
-# ASH: at a more basic level, I'd also explain why you are using cluster analysis..
-# ASH: along those lines, I'd provide a definition of k-means clustering
+# ASH: at a more basic level, I'd explain why you are using cluster analysis
 # ASH: I'd also define centriod. When I first read "Number of centroids", I was confused
 
 body <- dashboardBody(
@@ -145,6 +159,8 @@ body <- dashboardBody(
         # Intro tab content
         tabItem(tabName = "intro",
                     box("This dashboard is the final project for an R functional programming class. We use the Kaggle Pokemon dataset (available here [placeholder]) to demonstrate how different visualization of k-means clustering can provide help determine how well a clustering solution fits the data.", width = 12)),
+        
+        #ASH: is there a way to wrap the text? It's a bit hard to read as is!
         
         # clustplot tab content
         tabItem(tabName = "clustplot",
@@ -251,3 +267,14 @@ server <- function(input, output) {
 }
 
 shinyApp(ui, server)
+
+# ASH: The app looks awesome!! I cannot wait to see the final product!
+
+# ASH: In terms of the project requiements, you currently meet the requirement for using at least 2 variants of map 
+
+# ASH: I'm unsure if this is still a requirement, 
+# ......but I don't think you use a function outside the basic map family (walk_*, reduce, modify_*)?
+
+# ASH: you still need to incorporate at least one instance of parallel iteration (e.g., map2_*, pmap_*)
+# ASH: you also need at least one case of purrr::nest %>% mutate() 
+
