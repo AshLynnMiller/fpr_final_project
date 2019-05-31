@@ -111,7 +111,7 @@ scatplot <- function(data){
         labs(x = "Principal Component \n", 
              y = "") + 
         facet_wrap(~pokemon_type, 
-                   labeller = labeller(pokemon_type = facet_labels)) + # ASH: I was totally unaware of the labeller argument :o
+                   labeller = labeller(pokemon_type = facet_labels)) + # ASH: I was totally unaware of the labeller argument :o Good to know
         theme_minimal(base_size = 17) + 
         theme(panel.grid.minor = element_blank())
 }
@@ -151,8 +151,8 @@ sidebar <- dashboardSidebar(
 
 # ASH: I LOVE the fact that you are using Pokemon data, so... (see next line)
 # ASH: somewhere here I would include a section describing your data. I want to know more!
-# ASH: at a more basic level, I'd explain why you are using cluster analysis
-# ASH: I'd also define centriod. When I first read "Number of centroids", I was confused
+# ASH: at a more basic level, I'd explain why you are using cluster analysis/define centriod. 
+# ASH: When I first read "Number of centroids", I was confused
 
 body <- dashboardBody(
     tabItems(
